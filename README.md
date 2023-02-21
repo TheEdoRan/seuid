@@ -6,7 +6,7 @@
 
 This library is highly inspired by the [ULID spec](https://github.com/ulid/spec), but instead of creating [Crockford's Base32 strings](http://www.crockford.com/base32.html), it generates sequential IDs in a "UUID" hex format. This is super useful for databases like Postgres, that have a `uuid` type to store UUIDs efficiently.
 
-If you instead want to convert ULIDs to UUIDs and viceversa, check out this library: [ulid-uuid-converter](https://github.com/TheEdoRan/ulid-uuid-converter).
+If you instead want to convert ULIDs to UUIDs and vice versa, check out this library: [ulid-uuid-converter](https://github.com/TheEdoRan/ulid-uuid-converter).
 
 If multiple SEUIDs are generated within a millisecond by the same instance, the `generate` function will increment the last characters of the generated SEUID.
 
