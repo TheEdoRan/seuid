@@ -107,7 +107,7 @@ The `fromBase58` function, unlike the other ones, returns null by default if inp
 ### Example
 
 ```typescript
-// This one will output null
+// This one will return null
 const decoded = SEUID.fromBase58("invalid string");
 
 // This one will throw!
