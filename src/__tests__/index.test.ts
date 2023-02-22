@@ -81,22 +81,22 @@ describe("input validation", () => {
 		}).toThrow();
 	});
 
-	// toSEUID
-	test("toSEUID() with valid SEUID input passes", () => {
-		expect(SEUID.toSEUID(base58Id)).toBe(id);
+	// fromBase58
+	test("fromBase58() with valid SEUID input passes", () => {
+		expect(SEUID.fromBase58(base58Id)).toBe(id);
 	});
 
-	test("toSEUID() with invalid SEUID input returns null", () => {
-		expect(SEUID.toSEUID("invalid string")).toBeNull();
+	test("fromBase58() with invalid SEUID input returns null", () => {
+		expect(SEUID.fromBase58("invalid string")).toBeNull();
 	});
 
-	test("toSEUID() with invalid SEUID input and throwOnInvalid set to false returns null", () => {
-		expect(SEUID.toSEUID("invalid string", false)).toBeNull();
+	test("fromBase58() with invalid SEUID input and throwOnInvalid set to false returns null", () => {
+		expect(SEUID.fromBase58("invalid string", false)).toBeNull();
 	});
 
-	test("toSEUID() with invalid SEUID input and throwOnInvalid set to true throws", () => {
+	test("fromBase58() with invalid SEUID input and throwOnInvalid set to true throws", () => {
 		expect(() => {
-			SEUID.toSEUID("invalid string", true);
+			SEUID.fromBase58("invalid string", true);
 		}).toThrow();
 	});
 });
@@ -117,7 +117,7 @@ const generate = (cycles: number, timestamp?: number) => {
 		const time = SEUID.timestamp(id);
 		const date = SEUID.date(id);
 		const encodedSeuid = SEUID.toBase58(id);
-		const decodedSeuid = SEUID.toSEUID(encodedSeuid);
+		const decodedSeuid = SEUID.fromBase58(encodedSeuid);
 
 		results.push({ seuid: id, timestamp: time, date, encodedSeuid, decodedSeuid });
 	}

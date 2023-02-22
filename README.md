@@ -41,7 +41,7 @@ const date = SEUID.date(id);
 const encoded = SEUID.toBase58(id);
 // output: 1BvaCn3xh3PmJdcPaZoK9b
 
-const decoded = SEUID.toSEUID(encoded);
+const decoded = SEUID.fromBase58(encoded);
 // output: 018673f1-9c2f-8d2a-4d33-a63c7217444a
 ```
 
@@ -100,18 +100,18 @@ const date = SEUID.date("another invalid string", true);
 
 ---
 
-### `toSEUID()`
+### `fromBase58()`
 
-The `toSEUID` function, unlike the other ones, returns null by default if input or output is invalid. This is because the Base58 encoded string is intended to face the public, so an user error would be common in this case. If you want the `throw` behavior, you can pass an optional second argument called `throwOnInvalid` to the function.
+The `fromBase58` function, unlike the other ones, returns null by default if input or output is invalid. This is because the Base58 encoded string is intended to face the public, so an user error would be common in this case. If you want the `throw` behavior, you can pass an optional second argument called `throwOnInvalid` to the function.
 
 ### Example
 
 ```typescript
 // This one will output null
-const decoded = SEUID.toSEUID("invalid string");
+const decoded = SEUID.fromBase58("invalid string");
 
 // This one will throw!
-const decoded = SEUID.toSEUID("invalid string", true);
+const decoded = SEUID.fromBase58("invalid string", true);
 ```
 
 ## Generation

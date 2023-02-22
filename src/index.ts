@@ -94,13 +94,13 @@ export class SEUID {
 	 * @param seuidBase58 A valid SEUID encoded in Base58
 	 * @param throwOnInvalid Throw instead of returning null with invalid input/output.
 	 */
-	static toSEUID(seuidBase58: string, throwOnInvalid?: false): string | null;
-	static toSEUID(seuidBase58: string, throwOnInvalid: true): string;
+	static fromBase58(seuidBase58: string, throwOnInvalid?: false): string | null;
+	static fromBase58(seuidBase58: string, throwOnInvalid: true): string;
 
-	static toSEUID(seuidBase58: string, throwOnInvalid?: boolean) {
+	static fromBase58(seuidBase58: string, throwOnInvalid?: boolean) {
 		if (!SEUID_B58_REGEX.test(seuidBase58)) {
 			if (throwOnInvalid) {
-				throw new Error("SEUID toSEUID error: invalid input");
+				throw new Error("SEUID fromBase58 error: invalid input");
 			}
 			return null;
 		}
