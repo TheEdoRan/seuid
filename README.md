@@ -32,9 +32,22 @@ const timestamp = SEUID.timestamp(id);
 
 const date = SEUID.date(id);
 // output: 2023-02-21T12:27:39.439Z
+
+/* The library also supports encoding/decoding to/from Base58.
+ * This is useful for URLs and other similar contexts.
+ * The encoded string is always 22 characters long.
+ */
+
+const encoded = SEUID.toBase58(id);
+// output: 1BvaCn3xh3PmJdcPaZoK9b
+
+const decoded = SEUID.toSEUID(encoded);
+// output: 018673f1-9c2f-8d2a-4d33-a63c7217444a
 ```
 
-### Optional arguments
+## Optional arguments
+
+### `generate()`
 
 You can pass an optional timestamp argument to the `generate` function. When providing a timestamp, the time part of the generated SEUID will remain the same. If not provided, `generate` will use `Date.now()` as timetamp.
 
@@ -45,7 +58,7 @@ Max valid timestamp is `281474976710655`, in date: `Tue Aug 02 10889 05:31:50`.
 ### Example
 
 ```typescript
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 5; i++) {
 	// specific timestamp
 	const id = seuid.generate(1676985397606);
 	console.log(id);
@@ -55,11 +68,6 @@ for (let i = 0; i < 10; i++) {
 Will output:
 
 ```
-0186741e-7166-1872-a926-b3954cbbbf59
-0186741e-7166-1872-a926-b3954cbbbf5a
-0186741e-7166-1872-a926-b3954cbbbf5b
-0186741e-7166-1872-a926-b3954cbbbf5c
-0186741e-7166-1872-a926-b3954cbbbf5d
 0186741e-7166-1872-a926-b3954cbbbf5e
 0186741e-7166-1872-a926-b3954cbbbf5f
 0186741e-7166-1872-a926-b3954cbbbf60
@@ -70,6 +78,8 @@ Will output:
 As you can see, the time part is the same. Last characters are incremented.
 
 ---
+
+### `timestamp()` and `date()`
 
 You can pass an optional second argument called `skipValidation` to `timestamp` and `date` functions. This option skips input validation. Only use it if you're really sure that you're passing a valid SEUID as input.
 
@@ -86,6 +96,22 @@ const time = SEUID.timestamp("invalid string", true);
 
 const date = SEUID.date("another invalid string", true);
 // output: 1970-01-01T00:00:00.010Z
+```
+
+---
+
+### `toSEUID()`
+
+The `toSEUID` function, unlike the other ones, returns null by default if input or output is invalid. This is because the Base58 encoded string is intended to face the public, so an user error would be common in this case. If you want the `throw` behavior, you can pass an optional second argument called `throwOnInvalid` to the function.
+
+### Example
+
+```typescript
+// This one will output null
+const decoded = SEUID.toSEUID("invalid string");
+
+// This one will throw!
+const decoded = SEUID.toSEUID("invalid string", true);
 ```
 
 ## Generation
@@ -121,6 +147,8 @@ The generator incremented the last characters of the string.
 ## Credits
 
 The [ULID spec](https://github.com/ulid/spec).
+
+Big thanks to [cbschuld](https://github.com/cbschuld) for the [Base58](https://github.com/cbschuld/uuid-base58) encoding and decoding functions.
 
 ## License
 

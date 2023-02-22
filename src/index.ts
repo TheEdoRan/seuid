@@ -1,5 +1,7 @@
 import { randomBytes } from "crypto";
-import { SEUID_REGEX } from "./regexes";
+import { decodeB58, encodeB58 } from "./base58";
+import { SEUID_B58_REGEX, SEUID_REGEX } from "./regexes";
+import { addHyphens } from "./utils";
 
 const MAX_RANDOM_BIGINT = 1208925819614629174706175n;
 export const MAX_SEUID_TIMESTAMP = 281474976710655;
@@ -45,18 +47,7 @@ export class SEUID {
 
 		const timePart = currentTimestamp.toString(16).padStart(12, "0"); // 6 bytes timestamp (ms precision)
 
-		// Add hyphens
-		const seuid =
-			timePart.substring(0, 8) +
-			"-" +
-			timePart.substring(8, 12) +
-			"-" +
-			randomPart.substring(0, 4) +
-			"-" +
-			randomPart.substring(4, 8) +
-			"-" +
-			randomPart.substring(8);
-
+		const seuid = addHyphens(timePart + randomPart);
 		return seuid;
 	}
 
@@ -84,5 +75,36 @@ export class SEUID {
 		}
 
 		return new Date(this.timestamp(seuid, skipValidation));
+	}
+
+	/**
+	 * Encode a SEUID to Base58.
+	 * @param seuid A valid SEUID
+	 */
+	static toBase58(seuid: string) {
+		if (!SEUID_REGEX.test(seuid)) {
+			throw new Error("SEUID toBase58 error: invalid input");
+		}
+
+		return encodeB58(seuid);
+	}
+
+	/**
+	 * Decode a SEUID from Base58 to hex.
+	 * @param seuidBase58 A valid SEUID encoded in Base58
+	 * @param throwOnInvalid Throw instead of returning null with invalid input/output.
+	 */
+	static toSEUID(seuidBase58: string, throwOnInvalid?: false): string | null;
+	static toSEUID(seuidBase58: string, throwOnInvalid: true): string;
+
+	static toSEUID(seuidBase58: string, throwOnInvalid?: boolean) {
+		if (!SEUID_B58_REGEX.test(seuidBase58)) {
+			if (throwOnInvalid) {
+				throw new Error("SEUID toSEUID error: invalid input");
+			}
+			return null;
+		}
+
+		return decodeB58(seuidBase58, throwOnInvalid);
 	}
 }
