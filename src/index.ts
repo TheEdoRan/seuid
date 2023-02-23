@@ -21,7 +21,7 @@ export class SEUID {
 			);
 		}
 
-		const currentTimestamp = timestamp || Date.now();
+		const currentTimestamp = timestamp ?? Date.now();
 
 		// Increment random part. If bigint overflows in hex (all 'f's), restart counter.
 		// Very unlikely to happen.
@@ -40,8 +40,7 @@ export class SEUID {
 		const timePart = currentTimestamp.toString(16).padStart(12, "0"); // 6 bytes timestamp (ms precision)
 		const randomPart = this.lastIntRandomPart.toString(16).padStart(20, "0"); // 10 bytes of randomness
 
-		const seuid = addHyphens(`${timePart}${randomPart}`);
-		return seuid;
+		return addHyphens(`${timePart}${randomPart}`);
 	}
 
 	/**
