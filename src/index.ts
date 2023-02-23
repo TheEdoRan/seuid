@@ -49,7 +49,6 @@ export class SEUID {
 	 */
 	static timestamp(seuid: string, skipValidation: boolean = false) {
 		if (!skipValidation && !SEUID_REGEX.test(seuid)) {
-			console.log(seuid);
 			throw new Error("SEUID timestamp error: invalid input");
 		}
 
