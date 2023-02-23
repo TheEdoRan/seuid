@@ -146,7 +146,9 @@ Here's the behavior when generating multiple SEUIDs within the same millisecond:
             ms                incremented</code>
 </pre>
 
-The generator incremented the last characters of the string.
+The generator incremented the last characters of the string for SEUIDs generated in the same millisecond.
+
+When timestamp changes, a new random part is generated, as the ID is already sequential (and sortable) thanks to the updated time part.
 
 ## Credits
 
