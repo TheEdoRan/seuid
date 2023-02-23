@@ -49,7 +49,7 @@ const decoded = SEUID.fromBase58(encoded);
 
 ### `generate()`
 
-You can pass an optional timestamp argument to the `generate` function. When providing a timestamp, the time part of the generated SEUID will remain the same. If not provided, `generate` will use `Date.now()` as timetamp.
+You can pass an optional timestamp argument to the `generate` function. When providing a timestamp, the time part of the generated SEUID will remain the same. If not provided, `generate` will use `Date.now()` as timestamp.
 
 Max valid timestamp is `281474976710655`, in date: `Tue Aug 02 10889 05:31:50`.
 
