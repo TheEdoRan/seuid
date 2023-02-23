@@ -121,26 +121,30 @@ Generation works like this:
 ```
 018673f1-9c2f-8d2a-4d33-a63c7217444a
 |-----------| |--------------------|
-  timestamp        random part
-   6 bytes          10 bytes
+  timestamp        random  part
+   6 bytes           10 bytes
 ```
+
+Timestamp is in milliseconds. Randomness comes from `crypto.randomBytes()` function.
 
 ### Monotonic sort order
 
 Here's the behavior when generating multiple SEUIDs within the same millisecond:
 
-```
-01867402-6678-471d-d1bc-bd1e62ac31ca
-01867402-6678-471d-d1bc-bd1e62ac31cb
-01867402-6678-471d-d1bc-bd1e62ac31cc
-01867402-6678-471d-d1bc-bd1e62ac31cd
-01867402-6678-471d-d1bc-bd1e62ac31ce
-01867402-6678-471d-d1bc-bd1e62ac31cf
-01867402-6678-471d-d1bc-bd1e62ac31d0
-01867402-6679-2b76-2942-d2efe6f6d255 <-- millisecond changed
-01867402-6679-2b76-2942-d2efe6f6d256
-01867402-6679-2b76-2942-d2efe6f6d257
-```
+<pre>
+<code>01867402-6678-471d-d1bc-bd1e62ac31<b>ca</b>
+01867402-6678-471d-d1bc-bd1e62ac31<b>cb</b>
+01867402-6678-471d-d1bc-bd1e62ac31<b>cc</b>
+01867402-6678-471d-d1bc-bd1e62ac31<b>cd</b>
+01867402-6678-471d-d1bc-bd1e62ac31<b>ce</b>
+01867402-6678-471d-d1bc-bd1e62ac31<b>cf</b>
+01867402-6678-471d-d1bc-bd1e62ac31<b>d0</b>
+01867402-667<b>9</b>-2b76-2942-d2efe6f6d2<b>55</b> <-- millisecond changed
+01867402-6679-2b76-2942-d2efe6f6d2<b>56</b>
+01867402-6679-2b76-2942-d2efe6f6d2<b>57</b>
+            |                     ||
+            ms                incremented</code>
+</pre>
 
 The generator incremented the last characters of the string.
 
