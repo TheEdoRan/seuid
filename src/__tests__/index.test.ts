@@ -1,4 +1,4 @@
-import { MAX_SEUID_TIMESTAMP, SEUID } from "..";
+import { SEUID } from "..";
 import { SEUID_B58_REGEX, SEUID_REGEX } from "../regexes";
 
 const seuid = new SEUID();
@@ -16,7 +16,7 @@ describe("input validation", () => {
 
 	test("generate() with invalid timestamp input throws", () => {
 		expect(() => {
-			seuid.generate(MAX_SEUID_TIMESTAMP + 1);
+			seuid.generate(SEUID.MAX_TIMESTAMP + 1);
 		}).toThrow();
 	});
 

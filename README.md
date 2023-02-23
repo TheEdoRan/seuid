@@ -53,7 +53,7 @@ You can pass an optional timestamp argument to the `generate` function. When pro
 
 Max valid timestamp is `281474976710655`, in date: `Tue Aug 02 10889 05:31:50`.
 
-`MAX_SEUID_TIMESTAMP` is also exported by this library.
+You can access the maximum timestamp via `SEUID.MAX_TIMESTAMP`.
 
 ### Example
 

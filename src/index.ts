@@ -3,10 +3,9 @@ import { decodeB58, encodeB58 } from "./base58";
 import { SEUID_B58_REGEX, SEUID_REGEX } from "./regexes";
 import { addHyphens } from "./utils";
 
-const MAX_RANDOM_BIGINT = 1208925819614629174706175n;
-export const MAX_SEUID_TIMESTAMP = 281474976710655;
-
 export class SEUID {
+	public static readonly MAX_TIMESTAMP = 281474976710655;
+	private readonly MAX_RANDOM_BIGINT = 1208925819614629174706175n;
 	private lastTimestamp: number;
 	private lastIntRandomPart = 0n;
 
@@ -15,9 +14,9 @@ export class SEUID {
 	 * @param timestamp A seed for the time part of the SEUID. Max: `281474976710655`
 	 */
 	generate(timestamp?: number) {
-		if (timestamp && timestamp > MAX_SEUID_TIMESTAMP) {
+		if (timestamp && timestamp > SEUID.MAX_TIMESTAMP) {
 			throw new Error(
-				`SEUID generate error: input timestamp exceeds the maximum of ${MAX_SEUID_TIMESTAMP}`
+				`SEUID generate error: input timestamp exceeds the maximum of ${SEUID.MAX_TIMESTAMP}`
 			);
 		}
 
@@ -26,7 +25,7 @@ export class SEUID {
 		// Increment random part. If bigint overflows in hex (all 'f's), restart counter.
 		// Very unlikely to happen.
 		const incrementedIntRandomPart =
-			this.lastIntRandomPart >= MAX_RANDOM_BIGINT ? 0n : this.lastIntRandomPart + 1n;
+			this.lastIntRandomPart >= this.MAX_RANDOM_BIGINT ? 0n : this.lastIntRandomPart + 1n;
 
 		// If last timestamp is the same as current one, use the last incremented bigint
 		// generated previously. Otherwise generate new random sequence.
