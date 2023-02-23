@@ -26,7 +26,7 @@ export class SEUID {
 		// Increment random part. If bigint overflows in hex (all 'f's), restart counter.
 		// Very unlikely to happen.
 		const incrementedIntRandomPart =
-			this.lastIntRandomPart > MAX_RANDOM_BIGINT ? 0n : this.lastIntRandomPart + 1n;
+			this.lastIntRandomPart >= MAX_RANDOM_BIGINT ? 0n : this.lastIntRandomPart + 1n;
 
 		// If last timestamp is the same as current one, use the last incremented bigint
 		// generated previously. Otherwise generate new random sequence.
