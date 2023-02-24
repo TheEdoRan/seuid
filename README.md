@@ -79,9 +79,9 @@ As you can see, the time part is the same. Last characters are incremented.
 
 ---
 
-### `timestamp()` and `date()`
+### `timestamp()`, `date()`, `toBase58()`
 
-You can pass an optional second argument called `skipValidation` to `timestamp` and `date` functions. This option skips input validation. Only use it if you're really sure that you're passing a valid SEUID as input.
+You can pass an optional second argument called `skipValidation` to `timestamp`, `date` and `toBase58()` functions. This option skips input validation, resulting in faster execution. Only use it if you're really sure that you're passing a valid SEUID as input.
 
 ### Example
 
@@ -96,6 +96,9 @@ const time = SEUID.timestamp("invalid string", true);
 
 const date = SEUID.date("another invalid string", true);
 // output: 1970-01-01T00:00:00.010Z
+
+const encoded = SEUID.toBase58("invalid string", true);
+// output: SyntaxError
 ```
 
 ---
