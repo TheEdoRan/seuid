@@ -1,6 +1,6 @@
 import { randomBytes } from "crypto";
 import { decodeB58, encodeB58 } from "./base58";
-import { SEUID_B58_REGEX, SEUID_REGEX } from "./regexes";
+import { SEUID_REGEX } from "./regexes";
 import { addHyphens } from "./utils";
 
 export class SEUID {
@@ -71,9 +71,10 @@ export class SEUID {
 	/**
 	 * Encode a SEUID to Base58.
 	 * @param seuid A valid SEUID
+	 * @param skipValidation Skip input validation if you're sure you're passing a valid SEUID.
 	 */
-	static toBase58(seuid: string) {
-		if (!SEUID_REGEX.test(seuid)) {
+	static toBase58(seuid: string, skipValidation: boolean = false) {
+		if (!skipValidation && !SEUID_REGEX.test(seuid)) {
 			throw new Error("SEUID toBase58 error: invalid input");
 		}
 
@@ -89,13 +90,14 @@ export class SEUID {
 	static fromBase58(seuidBase58: string, throwOnInvalid: true): string;
 
 	static fromBase58(seuidBase58: string, throwOnInvalid?: boolean) {
-		if (!SEUID_B58_REGEX.test(seuidBase58)) {
+		try {
+			return decodeB58(seuidBase58, throwOnInvalid);
+		} catch (e) {
 			if (throwOnInvalid) {
-				throw new Error("SEUID fromBase58 error: invalid input");
+				throw new Error(`SEUID fromBase58 error: ${e.message}`);
 			}
+
 			return null;
 		}
-
-		return decodeB58(seuidBase58, throwOnInvalid);
 	}
 }
