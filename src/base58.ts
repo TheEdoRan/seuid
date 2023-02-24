@@ -3,44 +3,53 @@
 import { addHyphens } from "./utils";
 
 export const BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+const bigIntB58AlphabetLength = 58n;
+
+const DecodeInputError = new Error("invalid base58 SEUID provided");
+const encodedLength = 22;
 
 export const encodeB58 = (seuid: string) => {
-	let b = BigInt("0x" + seuid.replaceAll("-", ""));
-	let u58 = "";
+	const u58 = Buffer.alloc(encodedLength);
 
-	do {
-		const index = parseInt((b % BigInt(BASE58_ALPHABET.length)).toString(), 10);
-		u58 = BASE58_ALPHABET[index] + u58;
-		b = b / BigInt(BASE58_ALPHABET.length);
-	} while (b > 0);
+	// prettier-ignore
+	for (
+		let i = encodedLength - 1, b = BigInt("0x" + seuid.replaceAll("-", "")); b > 0; i--, b /= bigIntB58AlphabetLength) {
+		const b58idx = Number(b % bigIntB58AlphabetLength);
+		u58[i] = BASE58_ALPHABET.charCodeAt(b58idx);
+	}
 
-	// Add "1" at the beginning if string is 21 chars instead of 22.
-	return u58.padStart(22, "1");
+	// If first byte is 0, set value to "1", the first valid char in base58 alphabet.
+	u58[0] ||= 49; // "1"
+
+	return u58.toString();
 };
 
 export const decodeB58 = (seuidBase58: string, throwOnInvalid: boolean = false) => {
-	const parts = Array.from(seuidBase58).map((x: string) => BASE58_ALPHABET.indexOf(x));
-
-	if (parts.some((inc) => inc < 0)) {
-		if (throwOnInvalid) {
-			throw new Error("SEUID decodeB58 error: invalid Base58 SEUID provided");
-		}
-
-		return null;
+	if (seuidBase58.length !== encodedLength) {
+		throw DecodeInputError;
 	}
 
-	const b = parts.reduce(
-		(total, val, index) =>
-			(total + BigInt(val)) *
-			(index < seuidBase58.length - 1 ? BigInt(BASE58_ALPHABET.length) : BigInt(1)),
-		BigInt(0)
-	);
+	let b = 0n;
+
+	for (let i = 0; i < seuidBase58.length; i++) {
+		const b58Idx = BASE58_ALPHABET.indexOf(seuidBase58[i]!);
+
+		if (b58Idx < 0) {
+			if (throwOnInvalid) {
+				throw DecodeInputError;
+			}
+
+			return null;
+		}
+
+		b = (b + BigInt(b58Idx)) * (i < seuidBase58.length - 1 ? BigInt(BASE58_ALPHABET.length) : 1n);
+	}
 
 	const hex = b.toString(16).padStart(32, "0");
 
 	if (hex.length !== 32) {
 		if (throwOnInvalid) {
-			throw new Error("SEUID decodeB58 error: invalid hex output length");
+			throw new Error("invalid hex output length");
 		}
 
 		return null;
