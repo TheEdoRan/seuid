@@ -70,6 +70,10 @@
 							"release": "minor"
 						},
 						{
+							"type": "chore",
+							"release": "patch"
+						},
+						{
 							"type": "fix",
 							"release": "patch"
 						},
