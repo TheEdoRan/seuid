@@ -173,8 +173,8 @@ describe("encode and decode 100 SEUIDs that match relative regexes", () => {
 	});
 });
 
-describe("generate 100 SEUIDs, convert them to Base58 and then back to hex", () => {
-	test.each(generate(100))(
+describe("generate 1000 SEUIDs, convert them to Base58 and then back to hex", () => {
+	test.each(generate(1000))(
 		"$seuid -> $encodedSeuid -> $decodedSeuid",
 		({ seuid: id, decodedSeuid }) => {
 			expect(decodedSeuid).toBe(id);
