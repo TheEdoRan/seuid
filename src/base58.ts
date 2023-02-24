@@ -5,7 +5,7 @@ import { addHyphens } from "./utils";
 export const BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 const bigIntB58AlphabetLength = 58n;
 
-const DecodeInputError = new Error("invalid base58 SEUID provided");
+const DecodeInputError = new Error("invalid Base58 SEUID provided");
 const encodedLength = 22;
 
 export const encodeB58 = (seuid: string) => {
@@ -18,7 +18,7 @@ export const encodeB58 = (seuid: string) => {
 		u58[i] = BASE58_ALPHABET.charCodeAt(b58idx);
 	}
 
-	// If first byte is 0, set value to "1", the first valid char in base58 alphabet.
+	// If first byte is 0, set value to "1", the first valid char in Base58 alphabet.
 	u58[0] ||= 49; // "1"
 
 	return u58.toString();
