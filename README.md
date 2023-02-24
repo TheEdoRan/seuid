@@ -8,7 +8,7 @@ This library is highly inspired by the [ULID spec](https://github.com/ulid/spec)
 
 If you instead want to convert ULIDs to UUIDs and vice versa, check out this library: [ulid-uuid-converter](https://github.com/TheEdoRan/ulid-uuid-converter).
 
-If multiple SEUIDs are generated within a millisecond by the same instance, the `generate` function will increment the last characters of the generated SEUID.
+If multiple SEUIDs are generated within a millisecond by the same instance, the `generate()` function will increment the last characters of the generated SEUID.
 
 ## Installation
 
@@ -25,13 +25,13 @@ import { SEUID } from "seuid";
 const seuid = new SEUID();
 
 const id = seuid.generate();
-// output: 018673f1-9c2f-8d2a-4d33-a63c7217444a
+// outputs: 018673f1-9c2f-8d2a-4d33-a63c7217444a
 
 const timestamp = SEUID.timestamp(id);
-// output: 1676982459439
+// outputs: 1676982459439
 
 const date = SEUID.date(id);
-// output: 2023-02-21T12:27:39.439Z
+// outputs: 2023-02-21T12:27:39.439Z
 
 /* The library also supports encoding/decoding to/from Base58.
  * This is useful for URLs and other similar contexts.
@@ -39,17 +39,17 @@ const date = SEUID.date(id);
  */
 
 const encoded = SEUID.toBase58(id);
-// output: 1BvaCn3xh3PmJdcPaZoK9b
+// outputs: 1BvaCn3xh3PmJdcPaZoK9b
 
 const decoded = SEUID.fromBase58(encoded);
-// output: 018673f1-9c2f-8d2a-4d33-a63c7217444a
+// outputs: 018673f1-9c2f-8d2a-4d33-a63c7217444a
 ```
 
 ## Optional arguments
 
 ### `generate()`
 
-You can pass an optional timestamp argument to the `generate` function. When providing a timestamp, the time part of the generated SEUID will remain the same. If not provided, `generate` will use `Date.now()` as timestamp.
+You can pass an optional timestamp argument to the `generate()` function. When providing a timestamp, the time part of the generated SEUID will remain the same. If not provided, `generate()` will use `Date.now()` as timestamp.
 
 Max valid timestamp is `281474976710655`, in date: `Tue Aug 02 10889 05:31:50`.
 
@@ -81,7 +81,7 @@ As you can see, the time part is the same. Last characters are incremented.
 
 ### `timestamp()`, `date()`, `toBase58()`
 
-You can pass an optional second argument called `skipValidation` to `timestamp`, `date` and `toBase58()` functions. This option skips input validation, resulting in faster execution. Only use it if you're really sure that you're passing a valid SEUID as input.
+You can pass an optional second argument called `skipValidation` to `timestamp()`, `date()` and `toBase58()` functions. This option skips input validation, resulting in faster execution. Only use it if you're really sure that you're passing a valid SEUID as input.
 
 ### Example
 
@@ -92,20 +92,20 @@ const date = SEUID.date("invalid string");
 
 // these two will skip input validation and return unpredictable values with invalid strings
 const time = SEUID.timestamp("invalid string", true);
-// output: NaN
+// outputs: NaN
 
 const date = SEUID.date("another invalid string", true);
-// output: 1970-01-01T00:00:00.010Z
+// outputs: 1970-01-01T00:00:00.010Z
 
 const encoded = SEUID.toBase58("invalid string", true);
-// output: SyntaxError
+// throws SyntaxError
 ```
 
 ---
 
 ### `fromBase58()`
 
-The `fromBase58` function, unlike the other ones, returns null by default if input or output is invalid. This is because the Base58 encoded string is intended to face the public, so an user error would be common in this case. If you want the `throw` behavior, you can pass an optional second argument called `throwOnInvalid` to the function.
+The `fromBase58()` function, unlike the other ones, returns null by default if input or output is invalid. This is because the Base58 encoded string is intended to face the public, so an user error would be common in this case. If you want the `throw` behavior, you can pass an optional second argument called `throwOnInvalid` to the function.
 
 ### Example
 
