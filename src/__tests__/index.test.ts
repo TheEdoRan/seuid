@@ -75,10 +75,29 @@ describe("input validation", () => {
 		expect(SEUID.toBase58(id)).toBe(base58Id);
 	});
 
-	test("toBase58() with invalid SEUID input throws", () => {
+	// "invalid string" cannot be conveted to hex
+	test('toBase58() with "invalid string" as input and no second argument throws', () => {
 		expect(() => {
 			SEUID.toBase58("invalid string");
 		}).toThrow();
+	});
+
+	// "invalid string" cannot be conveted to hex
+	test('toBase58() with "invalid string" as input and skipValidation set to false throws', () => {
+		expect(() => {
+			SEUID.toBase58("invalid string", false);
+		}).toThrow();
+	});
+
+	test("toBase58() with valid SEUID input and skipValidation set to true works", () => {
+		expect(SEUID.toBase58(id, true)).toBe(base58Id);
+	});
+
+	// "ffa9e10b3c" is valid hex input, but invalid SEUID
+	test("toBase58() with invalid SEUID but valid hex input and skipValidation set to true doesn't throw", () => {
+		expect(() => {
+			SEUID.toBase58("ffa9e10b3c", true);
+		}).not.toThrow();
 	});
 
 	// fromBase58
