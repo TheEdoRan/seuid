@@ -42,7 +42,7 @@ export const decodeB58 = (seuidBase58: string, throwOnInvalid: boolean = false) 
 			return null;
 		}
 
-		b = (b + BigInt(b58Idx)) * (i < seuidBase58.length - 1 ? BigInt(BASE58_ALPHABET.length) : 1n);
+		b = (b + BigInt(b58Idx)) * (i < seuidBase58.length - 1 ? bigIntB58AlphabetLength : 1n);
 	}
 
 	const hex = b.toString(16).padStart(32, "0");
