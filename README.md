@@ -191,7 +191,7 @@ When timestamp changes, a new random part is generated, as the ID is already seq
 
 The [ULID spec](https://github.com/ulid/spec).
 
-Big thanks to this [cbschuld library](https://github.com/cbschuld/uuid-base58) for the base implementation of encoding and decoding.
+Big thanks to [cbschuld's uuid-base58](https://github.com/cbschuld/uuid-base58) library for the base implementation of encoding and decoding.
 
 ## License
 
