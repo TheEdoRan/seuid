@@ -37,6 +37,7 @@ export class SEUID {
 			? calculateEncodedIdLength(opts.encoderCharacterSet)
 			: 22;
 	}
+
 	/**
 	 * Generate a new SEUID.
 	 * @param timestamp A seed for the time part of the SEUID. Max: `281474976710655`
