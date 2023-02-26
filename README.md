@@ -137,18 +137,18 @@ const encoded = seuid.encode("invalid string", true);
 
 ---
 
-### `encode()`
+### `decode()`
 
-The `encode()` method, unlike the other ones, returns null by default if input or output is invalid. This is because the encoded string is intended to face the public, so an user error would be common in multiple scenarios. If you want the `throw` behavior, you can pass an optional second argument called `throwOnInvalid` to the method.
+The `decode()` method, unlike the other ones, returns null by default if input or output is invalid. This is because the encoded string is intended to face the public, so an user error would be common in multiple scenarios. If you want the `throw` behavior, you can pass an optional second argument called `throwOnInvalid` to the method.
 
 ### Example
 
 ```typescript
 // This one will return null
-const decoded = seuid.encode("invalid string");
+const decoded = seuid.decode("invalid string");
 
 // This one will throw!
-const decoded = seuid.encode("invalid string", true);
+const decoded = seuid.decode("invalid string", true);
 ```
 
 ## Generation
