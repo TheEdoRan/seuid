@@ -9,11 +9,7 @@ export const encodeSEUID = (seuid: string, characterSet: string, encodedLength: 
 
 	const bigIntCharacterSetLength = BigInt(characterSet.length);
 
-	for (
-		let i = encodedLength - 1, b = BigInt("0x" + seuid.replaceAll("-", ""));
-		b > 0;
-		i--, b /= bigIntCharacterSetLength
-	) {
+	for (let b = BigInt("0x" + seuid.replaceAll("-", "")); b > 0; b /= bigIntCharacterSetLength) {
 		const charsetIdx = Number(b % bigIntCharacterSetLength);
 		encoded = characterSet[charsetIdx] + encoded;
 	}
