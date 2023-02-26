@@ -3,6 +3,34 @@ import { SEUID_REGEX } from "../regexes";
 
 const seuid = new SEUID();
 
+describe("constructor options validation ", () => {
+	test("instance with shorter than 16 character set throws on creation", () => {
+		expect(() => {
+			new SEUID({ encoderCharacterSet: "ABC" });
+		}).toThrow();
+	});
+
+	test("instance with longer than 64 character set throws on creation", () => {
+		expect(() => {
+			new SEUID({
+				encoderCharacterSet: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_?/\\",
+			});
+		}).toThrow();
+	});
+
+	test("instance with duplicate characters in charset throws on creation", () => {
+		expect(() => {
+			new SEUID({ encoderCharacterSet: "ABCDDEEEEEFFFFGGGGaaaa0000bbbb||???," });
+		}).toThrow();
+	});
+
+	test("instance with charset of length 36 and no duplicates works", () => {
+		expect(() => {
+			new SEUID({ encoderCharacterSet: "0123456789abcdefghijklmnopqrstuvwxyz" });
+		}).not.toThrow();
+	});
+});
+
 describe("input and output validation", () => {
 	const id = "0186745f-ab2f-d8ad-6ccf-b851f77e2173";
 	const base58Id = "1BvaMwjnCjWp6PBqDb463t";
@@ -22,104 +50,104 @@ describe("input and output validation", () => {
 
 	// timestamp
 	test("timestamp() with valid SEUID input passes", () => {
-		expect(SEUID.timestamp(id)).toBe(timestamp);
+		expect(seuid.timestamp(id)).toBe(timestamp);
 	});
 
 	test("timestamp() with invalid SEUID input and no second argument throws", () => {
 		expect(() => {
-			SEUID.timestamp("invalid string");
+			seuid.timestamp("invalid string");
 		}).toThrow();
 	});
 
 	test("timestamp() with invalid SEUID input and skipValidation set to false throws", () => {
 		expect(() => {
-			SEUID.timestamp("invalid string", false);
+			seuid.timestamp("invalid string", false);
 		}).toThrow();
 	});
 
 	test("timestamp() with invalid SEUID input and skipValidation set to true returns NaN", () => {
-		expect(SEUID.timestamp("invalid string", true)).toBeNaN();
+		expect(seuid.timestamp("invalid string", true)).toBeNaN();
 	});
 
 	test("timestamp() with valid SEUID input and skipValidation set to true works", () => {
-		expect(SEUID.timestamp(id, true)).toBe(timestamp);
+		expect(seuid.timestamp(id, true)).toBe(timestamp);
 	});
 
 	// date
 	test("date() with valid SEUID input passes", () => {
-		expect(SEUID.date(id)).toStrictEqual(date);
+		expect(seuid.date(id)).toStrictEqual(date);
 	});
 
 	test("date() with invalid SEUID input and no second argument throws", () => {
 		expect(() => {
-			SEUID.date("invalid string");
+			seuid.date("invalid string");
 		}).toThrow();
 	});
 
 	test("date() with invalid SEUID input and skipValidation set to false throws", () => {
 		expect(() => {
-			SEUID.date("invalid string", false);
+			seuid.date("invalid string", false);
 		}).toThrow();
 	});
 
 	test("date() with invalid SEUID input and skipValidation set to true returns Invalid Date", () => {
-		expect(Number.isNaN(SEUID.date("invalid string", true).getTime())).toBe(true);
+		expect(Number.isNaN(seuid.date("invalid string", true).getTime())).toBe(true);
 	});
 
 	test("date() with valid SEUID input and skipValidation set to true works", () => {
-		expect(SEUID.date(id, true)).toStrictEqual(date);
+		expect(seuid.date(id, true)).toStrictEqual(date);
 	});
 
 	/*
-	 * BASE58 ENCODING/DECODING
+	 * ENCODING/DECODING (defaults to Base58)
 	 */
 
-	// toBase58
-	test("toBase58() with valid SEUID input passes", () => {
-		expect(SEUID.toBase58(id)).toBe(base58Id);
+	// encode
+	test("encode() with valid SEUID input passes", () => {
+		expect(seuid.encode(id)).toBe(base58Id);
 	});
 
 	// "invalid string" cannot be conveted to hex
-	test('toBase58() with "invalid string" as input and no second argument throws', () => {
+	test('encode() with "invalid string" as input and no second argument throws', () => {
 		expect(() => {
-			SEUID.toBase58("invalid string");
+			seuid.encode("invalid string");
 		}).toThrow();
 	});
 
 	// "invalid string" cannot be conveted to hex
-	test('toBase58() with "invalid string" as input and skipValidation set to false throws', () => {
+	test('encode() with "invalid string" as input and skipValidation set to false throws', () => {
 		expect(() => {
-			SEUID.toBase58("invalid string", false);
+			seuid.encode("invalid string", false);
 		}).toThrow();
 	});
 
-	test("toBase58() with valid SEUID input and skipValidation set to true works", () => {
-		expect(SEUID.toBase58(id, true)).toBe(base58Id);
+	test("encode() with valid SEUID input and skipValidation set to true works", () => {
+		expect(seuid.encode(id, true)).toBe(base58Id);
 	});
 
 	// "ffa9e10b3c" is valid hex input, but invalid SEUID
-	test("toBase58() with invalid SEUID but valid hex input and skipValidation set to true doesn't throw", () => {
+	test("encode() with invalid SEUID but valid hex input and skipValidation set to true doesn't throw", () => {
 		expect(() => {
-			SEUID.toBase58("ffa9e10b3c", true);
+			seuid.encode("ffa9e10b3c", true);
 		}).not.toThrow();
 	});
 
-	// fromBase58
-	test("fromBase58() with valid SEUID input passes", () => {
-		expect(SEUID.fromBase58(base58Id)).toBe(id);
+	// decode
+	test("decode() with valid SEUID input passes", () => {
+		expect(seuid.decode(base58Id)).toBe(id);
 	});
 
-	test("fromBase58() with invalid SEUID input returns null", () => {
-		expect(SEUID.fromBase58("invalid string")).toBeNull();
+	test("decode() with invalid SEUID input returns null", () => {
+		expect(seuid.decode("invalid string")).toBeNull();
 	});
 
-	test("fromBase58() with invalid SEUID input and throwOnInvalid set to false returns null", () => {
-		expect(SEUID.fromBase58("invalid string", false)).toBeNull();
+	test("decode() with invalid SEUID input and throwOnInvalid set to false returns null", () => {
+		expect(seuid.decode("invalid string", false)).toBeNull();
 	});
 
-	test("fromBase58() with invalid SEUID input and throwOnInvalid set to true throws", () => {
+	test("decode() with invalid SEUID input and throwOnInvalid set to true throws", () => {
 		expect(() => {
-			SEUID.fromBase58("invalid string", true);
+			seuid.decode("invalid string", true);
 		}).toThrow();
 	});
 });

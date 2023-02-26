@@ -1,14 +1,42 @@
 import { randomBytes } from "crypto";
-import { decodeB58, encodeB58 } from "./base58";
+import { decodeSEUID, encodeSEUID } from "./encoder";
 import { SEUID_REGEX } from "./regexes";
-import { addHyphens } from "./utils";
+import { addHyphens, calculateEncodedIdLength } from "./utils";
+
+export type SEUIDOpts = {
+	encoderCharacterSet?: string;
+};
 
 export class SEUID {
 	public static readonly MAX_TIMESTAMP = 281474976710655;
+	public readonly ENCODED_ID_LENGTH: number;
+	private encoderCharacterSet: string;
 	private readonly MAX_RANDOM_BIGINT = 1208925819614629174706175n;
+
 	private lastTimestamp: number;
 	private lastIntRandomPart = 0n;
 
+	constructor(opts?: SEUIDOpts) {
+		if (opts?.encoderCharacterSet) {
+			if (opts.encoderCharacterSet.length < 16 || opts.encoderCharacterSet.length > 64) {
+				throw new Error(`SEUID error: invalid character set length: min 16, max 64`);
+			}
+
+			// Check for duplicate characters.
+			const charsetArr = opts.encoderCharacterSet.split("");
+
+			if (charsetArr.length !== new Set(charsetArr).size) {
+				throw new Error(`SEUID error: duplicate values in charset`);
+			}
+		}
+
+		// Defaults to Base58 character set.
+		this.encoderCharacterSet =
+			opts?.encoderCharacterSet ?? "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+		this.ENCODED_ID_LENGTH = opts?.encoderCharacterSet
+			? calculateEncodedIdLength(opts.encoderCharacterSet)
+			: 22;
+	}
 	/**
 	 * Generate a new SEUID.
 	 * @param timestamp A seed for the time part of the SEUID. Max: `281474976710655`
@@ -47,7 +75,7 @@ export class SEUID {
 	 * @param seuid A valid SEUID
 	 * @param skipValidation Skip input validation if you're sure you're passing a valid SEUID.
 	 */
-	static timestamp(seuid: string, skipValidation: boolean = false) {
+	timestamp(seuid: string, skipValidation: boolean = false) {
 		if (!skipValidation && !SEUID_REGEX.test(seuid)) {
 			throw new Error("SEUID timestamp error: invalid input");
 		}
@@ -60,7 +88,7 @@ export class SEUID {
 	 * @param seuid A valid SEUID
 	 * @param skipValidation Skip input validation if you're sure you're passing a valid SEUID.
 	 */
-	static date(seuid: string, skipValidation: boolean = false) {
+	date(seuid: string, skipValidation: boolean = false) {
 		if (!skipValidation && !SEUID_REGEX.test(seuid)) {
 			throw new Error("SEUID date error: invalid input");
 		}
@@ -69,32 +97,37 @@ export class SEUID {
 	}
 
 	/**
-	 * Encode a SEUID to Base58.
+	 * Encode a SEUID with a given character set.
 	 * @param seuid A valid SEUID
 	 * @param skipValidation Skip input validation if you're sure you're passing a valid SEUID.
 	 */
-	static toBase58(seuid: string, skipValidation: boolean = false) {
+	encode(seuid: string, skipValidation: boolean = false) {
 		if (!skipValidation && !SEUID_REGEX.test(seuid)) {
-			throw new Error("SEUID toBase58 error: invalid input");
+			throw new Error("SEUID encode error: invalid input");
 		}
 
-		return encodeB58(seuid);
+		return encodeSEUID(seuid, this.encoderCharacterSet, this.ENCODED_ID_LENGTH);
 	}
 
 	/**
-	 * Decode a SEUID from Base58 to hex.
-	 * @param seuidBase58 A valid SEUID encoded in Base58
+	 * Decode a SEUID from character set to hex.
+	 * @param encodedSeuid A valid SEUID encoded in the given character set
 	 * @param throwOnInvalid Throw instead of returning null with invalid input/output.
 	 */
-	static fromBase58(seuidBase58: string, throwOnInvalid?: false): string | null;
-	static fromBase58(seuidBase58: string, throwOnInvalid: true): string;
+	decode(encodedSeuid: string, throwOnInvalid?: false): string | null;
+	decode(encodedSeuid: string, throwOnInvalid: true): string;
 
-	static fromBase58(seuidBase58: string, throwOnInvalid?: boolean) {
+	decode(encodedSeuid: string, throwOnInvalid?: boolean) {
 		try {
-			return decodeB58(seuidBase58, throwOnInvalid);
+			return decodeSEUID(
+				encodedSeuid,
+				this.encoderCharacterSet,
+				this.ENCODED_ID_LENGTH,
+				throwOnInvalid
+			);
 		} catch (e) {
 			if (throwOnInvalid) {
-				throw new Error(`SEUID fromBase58 error: ${e.message}`);
+				throw new Error(`SEUID decode error: ${e.message}`);
 			}
 
 			return null;

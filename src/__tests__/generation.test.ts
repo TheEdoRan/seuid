@@ -1,9 +1,7 @@
+import type { SEUIDOpts } from "..";
 import { SEUID } from "..";
-import { SEUID_B58_REGEX, SEUID_REGEX } from "../regexes";
 
-const seuid = new SEUID();
-
-const generate = (cycles: number, timestamp?: number) => {
+const generate = (cycles: number, timestamp?: number, opts?: SEUIDOpts) => {
 	const results: {
 		seuid: string;
 		timestamp: number;
@@ -11,13 +9,14 @@ const generate = (cycles: number, timestamp?: number) => {
 		encodedSeuid: string;
 		decodedSeuid: string | null;
 	}[] = [];
+	const seuid = new SEUID(opts);
 
 	for (let i = 0; i < cycles; i++) {
 		const id = seuid.generate(timestamp);
-		const time = SEUID.timestamp(id);
-		const date = SEUID.date(id);
-		const encodedSeuid = SEUID.toBase58(id);
-		const decodedSeuid = SEUID.fromBase58(encodedSeuid);
+		const time = seuid.timestamp(id);
+		const date = seuid.date(id);
+		const encodedSeuid = seuid.encode(id);
+		const decodedSeuid = seuid.decode(encodedSeuid);
 
 		results.push({ seuid: id, timestamp: time, date, encodedSeuid, decodedSeuid });
 	}
@@ -38,27 +37,39 @@ describe("generate() with a seed always returns the same time part", () => {
 	});
 });
 
-describe("generate 100 SEUIDs that match SEUID_REGEX", () => {
-	test.each(generate(100))(`$seuid matches ${SEUID_REGEX}`, ({ seuid: id }) => {
-		expect(id).toMatch(SEUID_REGEX);
-	});
-});
-
-describe("encode and decode 100 SEUIDs that match relative regexes", () => {
-	test.each(generate(100))(`$encodedSeuid matches ${SEUID_B58_REGEX}`, ({ encodedSeuid }) => {
-		expect(encodedSeuid).toMatch(SEUID_B58_REGEX);
-	});
-
-	test.each(generate(100))(`$decodedSeuid matches ${SEUID_REGEX}`, ({ decodedSeuid }) => {
-		expect(decodedSeuid).toMatch(SEUID_REGEX);
-	});
-});
-
-describe("generate 1000 SEUIDs, convert them to Base58 and then back to hex", () => {
-	test.each(generate(1000))(
-		"$seuid -> $encodedSeuid -> $decodedSeuid",
+describe("generate 100 SEUIDs, encode and decode them with different character sets", () => {
+	// default Base58 encoding
+	test.each(generate(100))(
+		"Base58: $seuid -> $encodedSeuid -> $decodedSeuid",
 		({ seuid: id, decodedSeuid }) => {
 			expect(decodedSeuid).toBe(id);
 		}
 	);
+
+	// Hex encoding
+	test.each(
+		generate(100, undefined, {
+			encoderCharacterSet: "0123456789abcdef",
+		})
+	)("Hex: $seuid -> $encodedSeuid -> $decodedSeuid", ({ seuid: id, decodedSeuid }) => {
+		expect(decodedSeuid).toBe(id);
+	});
+
+	// Base64URL encoding
+	test.each(
+		generate(100, undefined, {
+			encoderCharacterSet: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_",
+		})
+	)("Base64URL: $seuid -> $encodedSeuid -> $decodedSeuid", ({ seuid: id, decodedSeuid }) => {
+		expect(decodedSeuid).toBe(id);
+	});
+
+	// Crockfrod's Base32 encoding
+	test.each(
+		generate(100, undefined, {
+			encoderCharacterSet: "0123456789ABCDEFGHJKMNPQRSTVWXYZ",
+		})
+	)("Crockford Base32: $seuid -> $encodedSeuid -> $decodedSeuid", ({ seuid: id, decodedSeuid }) => {
+		expect(decodedSeuid).toBe(id);
+	});
 });
